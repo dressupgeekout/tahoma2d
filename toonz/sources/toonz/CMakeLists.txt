@@ -559,11 +559,15 @@ elseif(BUILD_ENV_UNIXLIKE AND WITH_CANON)
         set(EXTRA_LIBS ${EXTRA_LIBS} Qt5::WinMain -lstrmiids -mwindows)
     endif()
 
+    if (NOT BUILD_TARGET_BSD)
+        set(EXTRA_LIBS ${EXTRA_LIBS} dl)
+    endif()
+
     target_link_libraries(
         Tahoma2D Qt5::Core Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Svg Qt5::Xml
         Qt5::Script Qt5::Widgets Qt5::PrintSupport Qt5::Multimedia Qt5::SerialPort Qt5::UiTools
         ${GL_LIB} ${GLUT_LIB} ${GLU_LIB} ${CANON_LIB} ${TURBOJPEG_LIB} ${OpenCV_LIBS}
-        ${EXTRA_LIBS} dl
+        ${EXTRA_LIBS}
     )
 
 elseif(BUILD_ENV_UNIXLIKE)
@@ -582,11 +586,15 @@ elseif(BUILD_ENV_UNIXLIKE)
         set(EXTRA_LIBS ${EXTRA_LIBS} Qt5::WinMain -lstrmiids -mwindows)
     endif()
 
+    if (NOT BUILD_TARGET_BSD)
+        set(EXTRA_LIBS ${EXTRA_LIBS} dl)
+    endif()
+
     target_link_libraries(
         Tahoma2D Qt5::Core Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Svg Qt5::Xml
         Qt5::Script Qt5::Widgets Qt5::PrintSupport Qt5::Multimedia Qt5::SerialPort Qt5::UiTools
         ${GL_LIB} ${GLUT_LIB} ${GLU_LIB} ${TURBOJPEG_LIB} ${OpenCV_LIBS}
-        ${EXTRA_LIBS} dl
+        ${EXTRA_LIBS}
     )
 endif()
 

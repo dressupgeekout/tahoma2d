@@ -33,7 +33,7 @@ class JpgConverter : public QThread {
   EdsStreamRef m_stream;
 #endif
 
-#if defined(MACOSX) || defined(LINUX)
+#if defined(MACOSX) || defined(LINUX) || defined(FREEBSD)
 #ifdef WITH_CANON
   EdsUInt64 m_dataSize = 0;
 #else

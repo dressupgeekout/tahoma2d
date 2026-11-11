@@ -351,7 +351,7 @@ static void printModules(std::string &out) {
     out.append(std::string(str) + " - " + path.toStdString());
     out.append("\n");
   }
-#else
+#elif defined(LINUX)
   dl_iterate_phdr(printModuleInfo, &out);
 #endif
 }
@@ -400,7 +400,7 @@ static void printBacktrace(std::string &out) {
     char addrstr[512];
     sprintf(addrstr, "%p", addr);
     sym = std::string(addrstr) + " (in " + module + ")";
-#else
+#elif defined(LINUX)
     link_map *link_map;
     dladdr1(buffer[i], &info, (void **)&link_map, RTLD_DL_LINKMAP);
     addr -= link_map->l_addr;

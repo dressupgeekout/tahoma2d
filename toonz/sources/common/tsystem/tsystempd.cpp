@@ -80,7 +80,12 @@
 #include <unistd.h>
 #include <sys/proc.h>
 #include <sys/vmmeter.h>
+#ifdef __NetBSD__
+#include <uvm/uvm_extern.h>
+#include <uvm/uvm_param.h>
+#else
 #include <vm/vm_param.h>
+#endif
 #include <grp.h>
 #include <utime.h>
 #include <stdio.h>
@@ -88,7 +93,11 @@
 #include <sys/mount.h>
 #include <pwd.h>
 #include <dlfcn.h>
+#ifdef __NetBSD__
+#define pagetok(__nb) ((__nb) * (sysconf(_SC_PAGESIZE)))
+#else
 #define pagetok(__nb) ((__nb) * (getpagesize()))
+#endif
 #endif
 
 #ifdef MACOSX
@@ -301,7 +310,7 @@ TINT64 TSystem::getFreeMemorySize(bool onlyPhysicalMemory) {
 
   TINT64 ret = 0;
   size_t size;
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__) || defined(__NetBSD__)
   int mib[] = {CTL_VM, VM_UVMEXP};
   struct uvmexp  uvmexp;
 #else
@@ -309,11 +318,11 @@ TINT64 TSystem::getFreeMemorySize(bool onlyPhysicalMemory) {
   struct vmtotal vmtotal;
 #endif
 
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__) || defined(__NetBSD__)
   size = sizeof(uvmexp);
   if (sysctl(mib, 2, &uvmexp, &size, NULL, 0) < 0)
     return (ret);
-  ret = pagetok((guint64)uvmexp.free);
+  ret = pagetok((quint64)uvmexp.free);
 #else
   size = sizeof(vmtotal);
   if (sysctl(mib, 2, &vmtotal, &size, NULL, 0) < 0)
@@ -362,6 +371,8 @@ TINT64 TSystem::getDiskSize(const TFilePath &diskName) {
 #ifndef _WIN32
 #ifdef HAIKU
 	size = 0;
+#elif defined(__NetBSD__)
+	struct statvfs buf;
 #else
   struct statfs buf;
 #ifdef __sgi
@@ -403,6 +414,8 @@ TINT64 TSystem::getFreeDiskSize(const TFilePath &diskName) {
 #ifndef _WIN32
 #ifdef HAIKU
 	size = 0;
+#elif defined(__NetBSD__)
+	struct statvfs buf;
 #else
   struct statfs buf;
 #ifdef __sgi
@@ -470,7 +483,7 @@ TINT64 TSystem::getMemorySize(bool onlyPhysicalMemory) {
 
   TINT64 ret = 0;
   size_t size;
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__) || defined(__NetBSD__)
   int mib[] = {CTL_VM, VM_UVMEXP};
   struct uvmexp  uvmexp;
 #else
@@ -478,11 +491,11 @@ TINT64 TSystem::getMemorySize(bool onlyPhysicalMemory) {
   struct vmtotal vmtotal;
 #endif
 
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__) || defined(__NetBSD__)
   size = sizeof(uvmexp);
   if (sysctl(mib, 2, &uvmexp, &size, NULL, 0) < 0)
     return (ret);
-  ret = pagetok((guint64)uvmexp.npages);
+  ret = pagetok((quint64)uvmexp.npages);
 #else
   size = sizeof(vmtotal);
   if (sysctl(mib, 2, &vmtotal, &size, NULL, 0) < 0)
